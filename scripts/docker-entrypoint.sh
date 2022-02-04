@@ -17,5 +17,5 @@ if [ "$EXPOSE_TCP" == "true" ]; then
     socat "TCP4-listen:$LIGHTNINGD_RPC_PORT,fork,reuseaddr" "UNIX-CONNECT:${networkdatadir}/lightning-rpc" &
     fg %-
 else
-    exec lightningd --network="${LIGHTNINGD_NETWORK}" "$@"
+    exec lightningd --plugin=/rest-plugin/plugin.js --network="${LIGHTNINGD_NETWORK}" "$@"
 fi

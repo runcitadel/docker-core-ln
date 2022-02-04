@@ -19,7 +19,7 @@ COPY ./fetch-scripts/fetch-bitcoin.sh .
 RUN chmod 755 fetch-bitcoin.sh
 RUN ./fetch-bitcoin.sh
 
-FROM debian:bullseye-slim as builder
+FROM node:16-bullseye-slim as builder
 
 ARG VERSION
 ARG REPO
@@ -53,7 +53,12 @@ RUN git clone --recurse-submodules $REPO && \
     make install && \
     ls -la  /tmp/lightning_install
 
-FROM debian:bullseye-slim as final
+WORKDIR /rest-plugin
+
+RUN git clone https://github.com/Ride-The-Lightning/c-lightning-REST.git . && \
+    npm install
+
+FROM node:16-bullseye-slim as final
 
 RUN apt-get update && apt-get install -y --no-install-recommends inotify-tools libpq5 libsodium23 \
     && rm -rf /var/lib/apt/lists/*
@@ -64,6 +69,7 @@ ARG DATA
 
 COPY --from=builder /lib /lib
 COPY --from=builder /tmp/lightning_install/ /usr/local/
+COPY --from=builder /rest-plugin /rest-plugin
 COPY --from=downloader /opt/bin /usr/bin
 COPY ./scripts/docker-entrypoint.sh entrypoint.sh
 
