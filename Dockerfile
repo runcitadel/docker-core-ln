@@ -60,7 +60,7 @@ RUN git clone https://github.com/Ride-The-Lightning/c-lightning-REST.git . && \
 
 FROM node:17-bullseye-slim as final
 
-RUN apt-get update && apt-get install -y --no-install-recommends inotify-tools libpq5 libsodium23 \
+RUN apt-get update && apt-get install -y --no-install-recommends inotify-tools libpq5 libsodium23 openssl \
     && rm -rf /var/lib/apt/lists/*
 
 ARG USER
