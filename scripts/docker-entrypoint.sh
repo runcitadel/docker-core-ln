@@ -4,6 +4,8 @@
 
 networkdatadir="${LIGHTNINGD_DATA}/${LIGHTNINGD_NETWORK}"
 
+cd "${LIGHTNINGD_DATA}"
+
 if [ "$EXPOSE_TCP" == "true" ]; then
     set -m
     lightningd "$@" &

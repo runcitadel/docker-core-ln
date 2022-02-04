@@ -73,8 +73,8 @@ COPY --from=builder /rest-plugin /rest-plugin
 COPY --from=downloader /opt/bin /usr/bin
 COPY ./scripts/docker-entrypoint.sh entrypoint.sh
 
-RUN mkdir /rust-plugin && \
-    chown 1000.1000 /rust-plugin
+
+RUN userdel -r node
 
 RUN adduser --disabled-password \
     --home "$DATA" \
