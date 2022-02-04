@@ -55,6 +55,9 @@ RUN git clone --recurse-submodules $REPO && \
 
 FROM debian:bullseye-slim as final
 
+RUN apt-get update && apt-get install -y --no-install-recommends inotify-tools libpq5 libsodium23 \
+    && rm -rf /var/lib/apt/lists/*
+
 ARG USER
 ARG DATA
 
