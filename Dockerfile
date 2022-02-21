@@ -55,8 +55,8 @@ RUN git clone --recurse-submodules $REPO && \
 
 WORKDIR /rest-plugin
 
-RUN git clone https://github.com/Ride-The-Lightning/c-lightning-REST.git . && \
-    npm install
+RUN git clone https://github.com/runcitadel/c-lightning-REST.git . && \
+    yarn
 
 FROM node:17-bullseye-slim as final
 
@@ -72,7 +72,6 @@ COPY --from=builder /tmp/lightning_install/ /usr/local/
 COPY --from=builder /rest-plugin /rest-plugin
 COPY --from=downloader /opt/bin /usr/bin
 COPY ./scripts/docker-entrypoint.sh entrypoint.sh
-
 
 RUN userdel -r node
 
