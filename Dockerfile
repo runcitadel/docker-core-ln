@@ -58,7 +58,7 @@ WORKDIR /rest-plugin
 RUN git clone https://github.com/runcitadel/c-lightning-REST.git . && \
     yarn
 
-FROM go:1.17 as graphql-builder
+FROM golang:1.17 as graphql-builder
 
 WORKDIR /graphql-plugin
 RUN git clone https://github.com/nettijoe96/c-lightning-graphql.git . && \
