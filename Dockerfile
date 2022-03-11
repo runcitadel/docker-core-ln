@@ -58,6 +58,12 @@ WORKDIR /rest-plugin
 RUN git clone https://github.com/runcitadel/c-lightning-REST.git . && \
     yarn
 
+FROM go:1.17 as graphql-builder
+
+WORKDIR /graphql-plugin
+RUN git clone https://github.com/nettijoe96/c-lightning-graphql.git . && \
+    go build -o c-lightning-graphql
+
 FROM node:17-bullseye-slim as final
 
 RUN apt-get update && apt-get install -y --no-install-recommends inotify-tools libpq5 libsodium23 openssl \
@@ -70,6 +76,7 @@ ARG DATA
 COPY --from=builder /lib /lib
 COPY --from=builder /tmp/lightning_install/ /usr/local/
 COPY --from=builder /rest-plugin /rest-plugin
+COPY --from=graphql-builder /graphql-plugin/c-lightning-graphql /graphql-plugin
 COPY --from=downloader /opt/bin /usr/bin
 COPY ./scripts/docker-entrypoint.sh entrypoint.sh
 
