@@ -71,11 +71,6 @@ FROM golang:1.17 as go-builder
 
 RUN go get github.com/mitchellh/gox
 
-
-RUN groupadd -r app && useradd -r -m -g app app
-
-USER app
-
 WORKDIR /graphql-plugin
 RUN git clone https://github.com/nettijoe96/c-lightning-graphql.git . && \
     go build -o c-lightning-graphql
