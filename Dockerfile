@@ -55,14 +55,18 @@ RUN git clone --recurse-submodules $REPO && \
 
 WORKDIR /rest-plugin
 
-RUN git clone https://github.com/runcitadel/c-lightning-REST.git . && \
+RUN git clone https://github.com/runcitadel/c-lightning-REST.git -b master . && \
     yarn
 
-FROM golang:1.17 as graphql-builder
+FROM golang:1.17 as go-builder
 
 WORKDIR /graphql-plugin
 RUN git clone https://github.com/nettijoe96/c-lightning-graphql.git . && \
     go build -o c-lightning-graphql
+
+WORKDIR /sparko-plugin
+RUN git clone https://github.com/fiatjaf/sparko.git . && \
+    go build -o c-lightning-sparko
 
 FROM node:17-bullseye-slim as final
 
@@ -76,7 +80,8 @@ ARG DATA
 COPY --from=builder /lib /lib
 COPY --from=builder /tmp/lightning_install/ /usr/local/
 COPY --from=builder /rest-plugin /rest-plugin
-COPY --from=graphql-builder /graphql-plugin/c-lightning-graphql /graphql-plugin
+COPY --from=go-builder /graphql-plugin/c-lightning-graphql /graphql-plugin
+COPY --from=go-builder /sparko-plugin/c-lightning-sparko /sparko-plugin
 COPY --from=downloader /opt/bin /usr/bin
 COPY ./scripts/docker-entrypoint.sh entrypoint.sh
 
