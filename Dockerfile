@@ -23,38 +23,44 @@ FROM debian:bullseye as builder
 
 ARG VERSION
 ARG REPO
+RUN apt-get update -qq && \
+    apt-get install -qq -y --no-install-recommends \
+        autoconf \
+        automake \
+        build-essential \
+        ca-certificates \
+        curl \
+        dirmngr \
+        gettext \
+        git \
+        gnupg \
+        libpq-dev \
+        libtool \
+        libffi-dev \
+        python3 \
+        python3-dev \
+        python3-mako \
+        python3-pip \
+        python3-venv \
+        python3-setuptools \
+        wget
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends ca-certificates autoconf \
-    automake build-essential git libtool python python3 python3-mako \
-    wget gnupg dirmngr git gettext libgmp-dev libsqlite3-dev net-tools \
-    zlib1g-dev unzip tclsh git libsodium-dev libpq-dev valgrind python3-pip \
-    valgrind libpq-dev shellcheck cppcheck \
-    libsecp256k1-dev jq \
-    python3-setuptools \
-    python3-dev curl
+
+WORKDIR /opt/lightningd
+COPY . /tmp/lightning
+RUN git clone --recursive $REPO . && \
+    git checkout $VERSION
 
 ARG DEVELOPER=0
+ENV PYTHON_VERSION=3
 
-WORKDIR /opt
-RUN git clone --recurse-submodules $REPO lightning
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3 - \
+    && pip3 install -U pip \
+    && pip3 install -U wheel \
+    && /root/.local/bin/poetry config virtualenvs.create false \
+    && /root/.local/bin/poetry install
 
-WORKDIR /opt/lightning
-
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
-RUN /root/.poetry/bin/poetry install
-
-RUN mkdir -p /tmp/lightning_install && \
-    ls -la /tmp && \
-    git checkout $VERSION && \
-    echo "Configuring" && \
-    ./configure --prefix=/tmp/lightning_install \
-        --enable-static && \
-    echo "Building" && \
-    make -j$(nproc) DEVELOPER=${DEVELOPER} && \
-    echo "installing" && \
-    make install && \
-    ls -la  /tmp/lightning_install
+RUN ./configure --prefix=/tmp/lightning_install --enable-static && make -j$(nproc) DEVELOPER=${DEVELOPER} && make install
 
 FROM node:17-bullseye as node-builder
 
