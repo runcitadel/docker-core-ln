@@ -56,7 +56,7 @@ RUN mkdir -p /tmp/lightning_install && \
     make install && \
     ls -la  /tmp/lightning_install
 
-FROM node:17-bullseye-slim as node-builder
+FROM node:17-bullseye as node-builder
 
 WORKDIR /rest-plugin
 
