@@ -19,7 +19,7 @@ COPY ./fetch-scripts/fetch-bitcoin.sh .
 RUN chmod 755 fetch-bitcoin.sh
 RUN ./fetch-bitcoin.sh
 
-FROM debian:bullseye-slim as builder
+FROM debian:bullseye as builder
 
 ARG VERSION
 ARG REPO
