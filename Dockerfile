@@ -109,7 +109,7 @@ COPY ./scripts/docker-entrypoint.sh entrypoint.sh
 
 RUN userdel -r node
 
-RUN chmod +x /sparko-plugin/dist
+RUN chmod +x /opt/lightningd/plugins/sparko-plugin
 
 RUN adduser --disabled-password \
     --home "$DATA" \
