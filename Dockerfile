@@ -32,7 +32,7 @@ RUN apt-get update && \
     valgrind libpq-dev shellcheck cppcheck \
     libsecp256k1-dev jq \
     python3-setuptools \
-    python3-dev
+    python3-dev curl
 
 ARG DEVELOPER=0
 
