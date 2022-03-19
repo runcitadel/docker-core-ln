@@ -19,7 +19,7 @@ COPY ./fetch-scripts/fetch-bitcoin.sh .
 RUN chmod 755 fetch-bitcoin.sh
 RUN ./fetch-bitcoin.sh
 
-FROM node:17-bullseye-slim as builder
+FROM debian:bullseye-slim as builder
 
 ARG VERSION
 ARG REPO
@@ -33,15 +33,18 @@ RUN apt-get update && \
     libsecp256k1-dev jq \
     python3-setuptools \
     python3-dev
-RUN pip3 install mrkd wheel mistune==0.8.4
 
 ARG DEVELOPER=0
 
 WORKDIR /opt
-RUN git clone --recurse-submodules $REPO && \
-    cd lightning && \
-    ls -la && \
-    mkdir -p /tmp/lightning_install && \
+RUN git clone --recurse-submodules $REPO lightning
+
+WORKDIR /opt/lightning
+
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+RUN /root/.poetry/bin/poetry install
+
+RUN mkdir -p /tmp/lightning_install && \
     ls -la /tmp && \
     git checkout $VERSION && \
     echo "Configuring" && \
@@ -53,20 +56,34 @@ RUN git clone --recurse-submodules $REPO && \
     make install && \
     ls -la  /tmp/lightning_install
 
+FROM node:17-bullseye-slim as node-builder
+
 WORKDIR /rest-plugin
 
 RUN git clone https://github.com/runcitadel/c-lightning-REST.git -b master . && \
     yarn
 
+WORKDIR /sparko-plugin
+RUN git clone --recursive https://github.com/fiatjaf/sparko.git . && \
+    make spark-wallet/client/dist/app.js
+
 FROM golang:1.17 as go-builder
+
+RUN go get github.com/mitchellh/gox
+
+
+RUN groupadd -r app && useradd -r -m -g app app
+
+USER app
 
 WORKDIR /graphql-plugin
 RUN git clone https://github.com/nettijoe96/c-lightning-graphql.git . && \
     go build -o c-lightning-graphql
 
+COPY --from=node-builder /sparko-plugin /sparko-plugin
 WORKDIR /sparko-plugin
-RUN git clone --recursive https://github.com/fiatjaf/sparko.git . && \
-    go build -o c-lightning-sparko
+RUN PATH=${HOME}/go/bin:$PATH make dist
+
 
 FROM node:17-bullseye-slim as final
 
@@ -79,9 +96,9 @@ ARG DATA
 
 COPY --from=builder /lib /lib
 COPY --from=builder /tmp/lightning_install/ /usr/local/
-COPY --from=builder /rest-plugin /rest-plugin
-COPY --from=go-builder /graphql-plugin/c-lightning-graphql /graphql-plugin
-COPY --from=go-builder /sparko-plugin/c-lightning-sparko /sparko-plugin
+COPY --from=node-builder /rest-plugin /rest-plugin
+COPY --from=go-builder /graphql-plugin/c-lightning-graphql /opt/lightningd/plugins/graphql-plugin
+COPY --from=go-builder /sparko-plugin/dist /opt/lightningd/plugins/sparko-plugin
 COPY --from=downloader /opt/bin /usr/bin
 COPY ./scripts/docker-entrypoint.sh entrypoint.sh
 
