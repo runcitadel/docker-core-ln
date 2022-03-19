@@ -3,7 +3,7 @@ ARG VERSION=master
 ARG USER=lightning
 ARG DATA=/data
 
-FROM debian:bullseye-slim as downloader
+FROM debian:bullseye as downloader
 
 ARG REPO
 ARG VERSION
