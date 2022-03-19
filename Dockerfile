@@ -65,7 +65,7 @@ RUN git clone https://github.com/nettijoe96/c-lightning-graphql.git . && \
     go build -o c-lightning-graphql
 
 WORKDIR /sparko-plugin
-RUN git clone https://github.com/fiatjaf/sparko.git . && \
+RUN git clone --recursive https://github.com/fiatjaf/sparko.git . && \
     go build -o c-lightning-sparko
 
 FROM node:17-bullseye-slim as final
