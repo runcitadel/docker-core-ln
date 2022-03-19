@@ -109,14 +109,15 @@ COPY ./scripts/docker-entrypoint.sh entrypoint.sh
 
 RUN userdel -r node
 
-RUN chmod +x /opt/lightningd/plugins/sparko-plugin
-
 RUN adduser --disabled-password \
     --home "$DATA" \
     --gecos "" \
     "$USER"
-USER $USER 
 
+
+RUN chown -R /opt/lightningd/plugins $USER:$USER && chmod +x /opt/lightningd/plugins/sparko-plugin
+
+USER $USER 
 ENV LIGHTNINGD_DATA=$DATA/.lightning
 ENV LIGHTNINGD_RPC_PORT=9835
 ENV LIGHTNINGD_PORT=9735
