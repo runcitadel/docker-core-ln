@@ -35,6 +35,10 @@ RUN apt-get update -qq && \
         git \
         gnupg \
         libpq-dev \
+        zlib1g-dev \
+        libsodium-dev \
+        libsqlite3-dev \
+        libgmp-dev \
         libtool \
         libffi-dev \
         python3 \
