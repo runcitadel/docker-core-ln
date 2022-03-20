@@ -102,8 +102,8 @@ ARG DATA
 COPY --from=builder /lib /lib
 COPY --from=builder /tmp/lightning_install/ /usr/local/
 COPY --from=node-builder /rest-plugin /rest-plugin
-COPY --from=go-builder /graphql-plugin/c-lightning-graphql /opt/lightningd/plugins/graphql-plugin
-COPY --from=go-builder /sparko-plugin/dist /opt/lightningd/plugins/sparko-plugin
+COPY --from=go-builder /graphql-plugin/c-lightning-graphql /graphql-plugin
+COPY --from=go-builder /sparko-plugin/dist /sparko-plugin
 COPY --from=downloader /opt/bin /usr/bin
 COPY ./scripts/docker-entrypoint.sh entrypoint.sh
 
@@ -115,9 +115,10 @@ RUN adduser --disabled-password \
     "$USER"
 
 
-RUN chown -R /opt/lightningd/plugins $USER:$USER && chmod +x /opt/lightningd/plugins/sparko-plugin
+RUN chown -R $USER /sparko-plugin && chmod +x /sparko-plugin
 
-USER $USER 
+USER $USER
+
 ENV LIGHTNINGD_DATA=$DATA/.lightning
 ENV LIGHTNINGD_RPC_PORT=9835
 ENV LIGHTNINGD_PORT=9735
