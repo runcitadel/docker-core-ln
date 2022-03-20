@@ -115,7 +115,7 @@ RUN adduser --disabled-password \
     "$USER"
 
 
-RUN chown -R $USER /sparko-plugin && chmod +x /sparko-plugin
+RUN chown -R $USER /sparko-plugin
 
 USER $USER
 

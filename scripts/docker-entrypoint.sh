@@ -19,5 +19,5 @@ if [ "$EXPOSE_TCP" == "true" ]; then
     socat "TCP4-listen:$LIGHTNINGD_RPC_PORT,fork,reuseaddr" "UNIX-CONNECT:${networkdatadir}/lightning-rpc" &
     fg %-
 else
-    exec lightningd --plugin=/rest-plugin/plugin.js --plugin=/sparko-plugin --network="${LIGHTNINGD_NETWORK}" "$@"
+    exec lightningd --plugin=/rest-plugin/plugin.js --plugin=/sparko-plugin/sparko_linux_$(dpkg --print-architecture) --network="${LIGHTNINGD_NETWORK}" "$@"
 fi
