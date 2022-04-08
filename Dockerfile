@@ -70,7 +70,7 @@ FROM node:17-bullseye as node-builder
 
 WORKDIR /rest-plugin
 
-RUN git clone https://github.com/Ride-the-Lightning/c-lightning-REST.git . && \
+RUN git clone https://github.com/runcitadel/c-lightning-REST.git . && \
     yarn
 
 WORKDIR /sparko-plugin
