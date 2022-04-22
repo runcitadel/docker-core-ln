@@ -1,5 +1,5 @@
 ARG REPO=https://github.com/ElementsProject/lightning.git
-ARG VERSION=v0.11.0rc2
+ARG VERSION=v0.11.0rc5
 ARG USER=lightning
 ARG DATA=/data
 
@@ -66,7 +66,7 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/inst
 
 RUN ./configure --prefix=/tmp/lightning_install --enable-static && make -j$(nproc) DEVELOPER=${DEVELOPER} && make install
 
-FROM node:17-bullseye as node-builder
+FROM node:18-bullseye as node-builder
 
 WORKDIR /rest-plugin
 
@@ -90,7 +90,7 @@ WORKDIR /sparko-plugin
 RUN PATH=${HOME}/go/bin:$PATH make dist
 
 
-FROM node:17-bullseye-slim as final
+FROM node:18-bullseye-slim as final
 
 RUN apt-get update && apt-get install -y --no-install-recommends inotify-tools libpq5 libsodium23 openssl \
     && rm -rf /var/lib/apt/lists/*
