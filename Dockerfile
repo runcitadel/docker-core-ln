@@ -1,5 +1,5 @@
 ARG REPO=https://github.com/ElementsProject/lightning.git
-ARG VERSION=v0.11.0rc5
+ARG VERSION=v0.11.0.1
 ARG USER=lightning
 ARG DATA=/data
 
@@ -19,7 +19,7 @@ COPY ./fetch-scripts/fetch-bitcoin.sh .
 RUN chmod 755 fetch-bitcoin.sh
 RUN ./fetch-bitcoin.sh
 
-FROM debian:bullseye as builder
+FROM rust:1.60-bullseye as builder
 
 ARG VERSION
 ARG REPO
@@ -46,7 +46,6 @@ RUN apt-get update -qq && \
         python3-mako \
         python3-pip \
         python3-venv \
-        python3-setuptools \
         wget
 
 
@@ -64,7 +63,11 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/inst
     && /root/.local/bin/poetry config virtualenvs.create false \
     && /root/.local/bin/poetry install
 
-RUN ./configure --prefix=/tmp/lightning_install --enable-static && make -j$(nproc) DEVELOPER=${DEVELOPER} && make install
+RUN rustup component add rustfmt
+
+RUN ./configure --prefix=/tmp/lightning_install --enable-static --enable-rust 
+RUN make -j$(nproc) DEVELOPER=${DEVELOPER}
+RUN make install
 
 FROM node:18-bullseye as node-builder
 
