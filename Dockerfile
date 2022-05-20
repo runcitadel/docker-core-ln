@@ -1,5 +1,5 @@
 ARG REPO=https://github.com/ElementsProject/lightning.git
-ARG VERSION=v0.11.0.1
+ARG VERSION=v0.11.1
 ARG USER=lightning
 ARG DATA=/data
 
@@ -9,8 +9,8 @@ ARG REPO
 ARG VERSION
 
 RUN set -ex \
-	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr wget
+	&& apt update \
+	&& apt install -qq --no-install-recommends ca-certificates dirmngr wget
 
 WORKDIR /opt
 
@@ -23,8 +23,8 @@ FROM rust:1.60-bullseye as builder
 
 ARG VERSION
 ARG REPO
-RUN apt-get update -qq && \
-    apt-get install -qq -y --no-install-recommends \
+RUN apt update && \
+    apt install -qq -y --no-install-recommends \
         autoconf \
         automake \
         build-essential \
@@ -95,7 +95,7 @@ RUN PATH=${HOME}/go/bin:$PATH make dist
 
 FROM node:18-bullseye-slim as final
 
-RUN apt-get update && apt-get install -y --no-install-recommends inotify-tools libpq5 libsodium23 openssl \
+RUN apt update && apt install -y --no-install-recommends inotify-tools libpq5 libsodium23 openssl \
     && rm -rf /var/lib/apt/lists/*
 
 ARG USER
