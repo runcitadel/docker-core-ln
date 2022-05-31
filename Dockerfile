@@ -10,7 +10,7 @@ ARG VERSION
 
 RUN set -ex \
 	&& apt update \
-	&& apt install -qq --no-install-recommends ca-certificates dirmngr wget
+	&& apt install -y -qq --no-install-recommends ca-certificates dirmngr wget
 
 WORKDIR /opt
 
