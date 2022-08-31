@@ -19,7 +19,7 @@ COPY ./fetch-scripts/fetch-bitcoin.sh .
 RUN chmod 755 fetch-bitcoin.sh
 RUN ./fetch-bitcoin.sh
 
-FROM rust:1.60-bullseye as builder
+FROM rust:1.63-bullseye as builder
 
 ARG VERSION
 ARG REPO
@@ -60,6 +60,7 @@ ENV PYTHON_VERSION=3
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3 - \
     && pip3 install -U pip \
     && pip3 install -U wheel \
+    && pip3 install -U mako \
     && /root/.local/bin/poetry config virtualenvs.create false \
     && /root/.local/bin/poetry install
 
