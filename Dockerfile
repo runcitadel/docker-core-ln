@@ -69,6 +69,11 @@ RUN ./configure --prefix=/tmp/lightning_install --enable-static --enable-rust
 RUN make -j$(nproc) DEVELOPER=${DEVELOPER}
 RUN make install
 
+WORKDIR /cln-init
+
+RUN git clone --recursive https://github.com/runcitadel/cln-init .
+RUN cargo build --release
+
 FROM node:18-bullseye as node-builder
 
 WORKDIR /rest-plugin
@@ -104,6 +109,8 @@ ARG DATA
 
 COPY --from=builder /lib /lib
 COPY --from=builder /tmp/lightning_install/ /usr/local/
+COPY --from=builder /cln-init/target/release/cln-initd /usr/bin/
+COPY --from=builder /cln-init/target/release/cln-init-cli /usr/bin/
 COPY --from=node-builder /rest-plugin /rest-plugin
 COPY --from=go-builder /graphql-plugin/c-lightning-graphql /graphql-plugin
 COPY --from=go-builder /sparko-plugin/dist /sparko-plugin
