@@ -19,7 +19,7 @@ COPY ./fetch-scripts/fetch-bitcoin.sh .
 RUN chmod 755 fetch-bitcoin.sh
 RUN ./fetch-bitcoin.sh
 
-FROM rust:1.63-bullseye as builder
+FROM rust:1.63-slim-bullseye as builder
 
 ARG VERSION
 ARG REPO
@@ -45,7 +45,7 @@ RUN apt update && \
         python3-dev \
         python3-mako \
         python3-pip \
-        python3-venv \
+        protobuf-compiler \
         wget
 
 
@@ -56,13 +56,8 @@ RUN git clone --recursive $REPO . && \
 
 ARG DEVELOPER=0
 
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3 - \
-    && pip3 install -U pip \
-    && pip3 install -U wheel \
-    && pip3 install -U mako \
-    && pip3 install mako \
-    && /root/.local/bin/poetry config virtualenvs.create false \
-    && /root/.local/bin/poetry install
+
+RUN python3 -m pip install mako mrkd mistune==0.8.4
 
 RUN rustup component add rustfmt
 
