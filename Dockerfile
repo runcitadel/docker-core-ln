@@ -1,5 +1,5 @@
 ARG REPO=https://github.com/ElementsProject/lightning.git
-ARG VERSION=v0.12.0
+ARG VERSION=v22.11.1
 ARG USER=lightning
 ARG DATA=/data
 
@@ -19,7 +19,7 @@ COPY ./fetch-scripts/fetch-bitcoin.sh .
 RUN chmod 755 fetch-bitcoin.sh
 RUN ./fetch-bitcoin.sh
 
-FROM rust:1.63-slim-bullseye as builder
+FROM rust:1.66-slim-bullseye as builder
 
 ARG VERSION
 ARG REPO
